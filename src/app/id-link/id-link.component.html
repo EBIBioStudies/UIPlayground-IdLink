@@ -1,0 +1,23 @@
+<div class="info"><span>prefix:</span> {{prefix}}</div>
+<div class="info"><span>id:</span> {{id}}</div>
+<div class="info"><span>URL:</span> {{url}}</div>
+<div class="id-link">
+    <input type="text"
+           placeholder="{{placeholder}}"
+           [class.invalid]="inputBox.invalid"
+           [disabled]="disabled"
+           [ngModel]="inputText"
+           (ngModelChange)="onInputChanged($event)"
+           (keydown)="onKeydown($event)"
+           idLinkValue
+           #inputBox="ngModel"/>
+  <ul [class.closed]="!listOpen">
+    <li class="item"
+        *ngFor="let item of items; let i=index"
+        [class.selected]="i === selectedIndex"
+        [inScrollView]="i === selectedIndex"
+        (mousedown)="onSelectItem(item, inputBox)"
+        (mouseover)="onMouseOverItem(i)">{{item}}
+    </li>
+  </ul>
+</div>
