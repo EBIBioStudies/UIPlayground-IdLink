@@ -1,4 +1,4 @@
-import {Component, ElementRef, forwardRef, Input, OnChanges, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, forwardRef, Input, OnChanges, Output, ViewChild} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {Subject} from 'rxjs/Subject';
 import 'rxjs/add/operator/debounceTime';
@@ -7,6 +7,7 @@ import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/observable/interval';
 import {IdLinkModel} from './id-link.model';
 import {IdLinkService} from './id-link.service';
+import {IdLinkValue} from './id-link.value';
 
 @Component({
   selector: 'id-link',
@@ -20,7 +21,7 @@ import {IdLinkService} from './id-link.service';
     }
   ]
 })
-export class IdLinkComponent implements ControlValueAccessor, OnChanges {
+export class IdLinkComponent implements ControlValueAccessor {
 
   @Input('placeholder') placeholder = 'prefix:identifier or URL';
   @Input('disabled') disabled = false;
@@ -34,11 +35,8 @@ export class IdLinkComponent implements ControlValueAccessor, OnChanges {
   private inputModel: IdLinkModel = new IdLinkModel();
   private inputChanged: Subject<string> = new Subject<string>();
 
-  private onChange = (_: any) => {
-  };
-
-  private onTouched = (_: any) => {
-  };
+  private onChange = [];
+  private onTouche = [];
 
   constructor(private service: IdLinkService) {
     this.inputChanged
@@ -50,41 +48,40 @@ export class IdLinkComponent implements ControlValueAccessor, OnChanges {
       });
   }
 
-  ngOnChanges(changes): void {
-    if (changes.inputText) {
-      this.updateItems(this.inputText);
+  set value(value: IdLinkValue) {
+    if (this.inputModel.asValue().asString() !== value.asString()) {
+      this.update(value.asString());
     }
   }
 
-  @Input('value')
-  set inputText(value: string) {
-    this.inputModel.update(value);
+  get value(): IdLinkValue {
+    return this.inputModel.asValue();
   }
 
-  get inputText(): string {
-    return this.inputModel.toString();
+  get inputText(): String {
+    return this.inputModel.asString();
   }
 
   writeValue(obj: any): void {
     if (obj) {
-      this.inputText = obj;
+      this.value = obj;
     }
   }
 
   registerOnChange(fn: any): void {
-    this.onChange = fn;
+    this.onChange.push(fn);
   }
 
   registerOnTouched(fn: any): void {
-    this.onTouched = fn;
+    this.onTouche.push(fn);
   }
 
   setDisabledState(disabled: boolean): void {
     this.disabled = disabled;
   }
 
-  onInputChanged(value) {
-    this.inputChanged.next(value);
+  onInputChanged(inputText) {
+    this.inputChanged.next(inputText);
   }
 
   onKeydown(ev) {
@@ -118,22 +115,13 @@ export class IdLinkComponent implements ControlValueAccessor, OnChanges {
     this.selectedIndex = itemIndex;
   }
 
-  get prefix(): string {
-    return this.inputModel.prefix;
-  }
-
-  get id(): string {
-    return this.inputModel.id;
-  }
-
-  get url(): string {
-    return this.inputModel.url;
-  }
-
-  private update(value, prefixOnly = false) {
+  private update(value: string, prefixOnly = false) {
     const prefixBefore = this.inputModel.prefix;
     this.inputModel.update(value, prefixOnly);
-    this.onChange(this.inputModel.toString());
+
+    const updates = this.inputModel.asValue();
+    this.onChange.forEach(f => f(updates));
+
     if (prefixBefore !== this.inputModel.prefix) {
       this.updateItems(this.inputModel.prefix || '');
     }

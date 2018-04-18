@@ -3,6 +3,7 @@ import {NgModule} from '@angular/core';
 
 import {AppComponent} from './app.component';
 import {IdLinkModule} from './id-link/id-link.module';
+import {FormsModule} from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -10,6 +11,7 @@ import {IdLinkModule} from './id-link/id-link.module';
   ],
   imports: [
     BrowserModule,
+    FormsModule,
     IdLinkModule
   ],
   providers: [],

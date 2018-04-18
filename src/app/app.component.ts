@@ -1,4 +1,5 @@
 import {Component} from '@angular/core';
+import {IdLinkValue} from './id-link/id-link.value';
 
 @Component({
   selector: 'app-root',
@@ -6,4 +7,10 @@ import {Component} from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
+
+  value: IdLinkValue = new IdLinkValue({prefix: 'cheb'});
+
+  onModelChange(val) {
+    this.value = val;
+  }
 }

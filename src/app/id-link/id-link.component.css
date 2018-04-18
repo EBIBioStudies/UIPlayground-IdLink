@@ -45,14 +45,3 @@
 .id-link > ul li:last-child {
   border-bottom: none;
 }
-
-.info {
-  font-family: Verdana, Arial, Helvetica, sans-serif;
-  margin: 5px;
-}
-
-.info > span {
-  background-color: #6f6f6f;
-  color: white;
-  padding: 2px;
-}

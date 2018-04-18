@@ -1,3 +1,5 @@
+import {IdLinkValue} from './id-link.value';
+
 export class IdLinkModel {
   private urlRegexp = /^(http|https|ftp)+[^\s]+$/;
   private idRegexp = /^([^:]+)(:.*)?$/;
@@ -17,14 +19,13 @@ export class IdLinkModel {
     const id = m[2];
     this.setValues({prefix: prefix, id: prefixOnly ? (this._id || ':') : id});
 
-    return this.toString();
+    return this.asString();
   }
 
-  toString(): string {
-    if (this._url === undefined) {
-      return `${this._prefix || ''}${this._id || ''}`;
-    }
-    return this._url;
+  setValues(values: { prefix?: string, id?: string, url?: string }) {
+    this._prefix = values.prefix;
+    this._id = values.id;
+    this._url = values.url;
   }
 
   get prefix(): string {
@@ -39,9 +40,14 @@ export class IdLinkModel {
     return this._url === undefined ? this._url : this._url.trim();
   }
 
-  private setValues(values: { prefix?: string, id?: string, url?: string }) {
-    this._prefix = values.prefix;
-    this._id = values.id;
-    this._url = values.url;
+  asValue(): IdLinkValue {
+    return new IdLinkValue({prefix: this.prefix, id: this.id, url: this.url});
+  }
+
+  asString(): string {
+    if (this._url === undefined) {
+      return `${this._prefix || ''}${this._id || ''}`;
+    }
+    return this._url;
   }
 }

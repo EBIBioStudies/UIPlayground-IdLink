@@ -3,6 +3,11 @@
 </h1>
 
 <form>
-  <id-link [value]="cheb"></id-link>
+  <div class="info"><span>prefix:</span> {{value?.prefix}}</div>
+  <div class="info"><span>id:</span> {{value?.id}}</div>
+  <div class="info"><span>URL:</span> {{value?.url}}</div>
+  <id-link [ngModel]="value"
+           (ngModelChange)="onModelChange($event)"
+           [ngModelOptions]="{standalone: true}"></id-link>
 </form>
 
