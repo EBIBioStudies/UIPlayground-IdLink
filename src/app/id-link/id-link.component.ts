@@ -36,7 +36,7 @@ export class IdLinkComponent implements ControlValueAccessor {
   private inputChanged: Subject<string> = new Subject<string>();
 
   private onChange = [];
-  private onTouche = [];
+  private onTouched = [];
 
   constructor(private service: IdLinkService) {
     this.inputChanged
@@ -73,7 +73,7 @@ export class IdLinkComponent implements ControlValueAccessor {
   }
 
   registerOnTouched(fn: any): void {
-    this.onTouche.push(fn);
+    this.onTouched.push(fn);
   }
 
   setDisabledState(disabled: boolean): void {
