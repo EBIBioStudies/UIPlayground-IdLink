@@ -10,19 +10,19 @@ export class IdLinkModel {
 
   update(input = '', prefixOnly = false): string {
     if (this.urlRegexp.test(input)) {
-      this.setValues({url: input});
+      this.updateValues({url: input});
       return input;
     }
 
     const m = input.match(this.idRegexp) || [input];
     const prefix = m[1];
     const id = m[2];
-    this.setValues({prefix: prefix, id: prefixOnly ? (this._id || ':') : id});
+    this.updateValues({prefix: prefix, id: prefixOnly ? (this._id || ':') : id});
 
     return this.asString();
   }
 
-  setValues(values: { prefix?: string, id?: string, url?: string }) {
+  updateValues(values: { prefix?: string, id?: string, url?: string }) {
     this._prefix = values.prefix;
     this._id = values.id;
     this._url = values.url;
@@ -33,7 +33,11 @@ export class IdLinkModel {
   }
 
   get id(): string {
-    return this._id === undefined ? this._id : this._id.trim().substring(1);
+    if (this._id !== undefined) {
+      const v = this._id.trim().substring(1);
+      return v.length === 0 ? undefined : v;
+    }
+    return undefined;
   }
 
   get url(): string {
