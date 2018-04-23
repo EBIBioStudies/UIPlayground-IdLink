@@ -31,7 +31,7 @@ export class IdLinkService {
     return this.http.get(`https://identifiers.org/rest/identifiers/validate/${prefix}:${id}`)
       .catch((err) => {
         if (err.status === 404) {
-          return Observable.of(err);
+          return Observable.of(err.error);
         }
         return Observable.throw(err);
       });

@@ -18,6 +18,7 @@ export function idLinkValidator(service: IdLinkService): AsyncValidatorFn {
     const m = value.match(VALUE_REGEXP);
     if (m && m.length === 3) {
       return service.validate(m[1], m[2]).map(res => {
+        console.log(res);
         return res['message'] ? {idLinkValue: true} : null;
       });
     }
