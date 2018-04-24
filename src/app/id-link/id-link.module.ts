@@ -8,6 +8,10 @@ import {IdLinkValueValidatorDirective} from './id-link.validator.directive';
 import {IdLinkService} from './id-link.service';
 import {InScrollViewDirective} from './in-scroll-view.directive';
 
+import {
+  TypeaheadModule
+} from 'ngx-bootstrap';
+
 @NgModule({
   declarations: [
     IdLinkComponent,
@@ -17,7 +21,8 @@ import {InScrollViewDirective} from './in-scroll-view.directive';
   imports: [
     CommonModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    TypeaheadModule.forRoot(),
   ],
   providers: [
     IdLinkService

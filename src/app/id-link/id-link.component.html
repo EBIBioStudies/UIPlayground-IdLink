@@ -1,20 +1,16 @@
-<div class="id-link">
-    <input type="text"
-           placeholder="{{placeholder}}"
-           [class.invalid]="inputBox.invalid"
-           [disabled]="disabled"
-           [ngModel]="inputText"
-           (ngModelChange)="onInputChanged($event)"
-           (keydown)="onKeydown($event)"
-           idLinkValue
-           #inputBox="ngModel"/>
-  <ul [class.closed]="!listOpen">
-    <li class="item"
-        *ngFor="let item of items; let i=index"
-        [class.selected]="i === selectedIndex"
-        [inScrollView]="i === selectedIndex"
-        (mousedown)="onSelectItem(item, inputBox)"
-        (mouseover)="onMouseOverItem(i)">{{item}}
-    </li>
-  </ul>
-</div>
+<input type="text" class="form-control"
+       placeholder="{{placeholder}}"
+       [disabled]="disabled"
+       [ngModel]="inputText"
+       (ngModelChange)="onInputChanged($event)"
+       (keydown)="onKeydown($event)"
+       idLinkValue
+       #inputBox="ngModel"
+       [readonly]="readonly"
+       [required]="required"
+       [typeahead]="readonly ? [] : items"
+       [typeaheadMinLength]="suggestThreshold"
+       [typeaheadOptionsLimit]="suggestLength"
+       #ahead="bs-typeahead"
+       (keyup.enter)="ahead._container ? $event.stopPropagation() : return"/>
+{{inputBox.invalid}}

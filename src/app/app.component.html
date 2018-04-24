@@ -1,13 +1,10 @@
-<h1>
-  ID link example
-</h1>
-
-<form>
-  <div class="info"><span>prefix:</span> {{value?.prefix}}</div>
-  <div class="info"><span>id:</span> {{value?.id}}</div>
-  <div class="info"><span>URL:</span> {{value?.url}}</div>
-  <id-link [ngModel]="value"
-           (ngModelChange)="onModelChange($event)"
-           [ngModelOptions]="{standalone: true}"></id-link>
-</form>
-
+<main class="col-xs-12">
+  <h1>ID link example</h1>
+  {{link.invalid}}
+  <form [ngClass]="{'has-error': link.invalid}">
+    <id-link name="link"
+             #link="ngModel"
+             [ngModel]="value"
+             (ngModelChange)="onModelChange($event)"></id-link>
+  </form>
+</main>

@@ -8,7 +8,7 @@ import {IdLinkValue} from './id-link/id-link.value';
 })
 export class AppComponent {
 
-  value: IdLinkValue = new IdLinkValue({prefix: 'cheb'});
+  value: IdLinkValue = new IdLinkValue({prefix: ''});
 
   onModelChange(val) {
     this.value = val;

@@ -25,7 +25,10 @@ export class IdLinkComponent implements ControlValueAccessor {
 
   @Input('placeholder') placeholder = 'prefix:identifier or URL';
   @Input('disabled') disabled = false;
-
+  @Input() required?: boolean = false;
+  @Input() readonly?: boolean = false;
+  @Input() suggestLength: number = 30;        //max number of suggested values to be displayed at once
+  @Input() suggestThreshold: number = 0;      //number of typed characters before suggestions are displayed.
   @ViewChild('inputBox', {read: ElementRef}) inputEl: ElementRef;
 
   items: String[] = [];
