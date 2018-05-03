@@ -2,15 +2,14 @@
        placeholder="{{placeholder}}"
        [disabled]="disabled"
        [ngModel]="inputText"
-       (ngModelChange)="onInputChanged($event)"
-       (keydown)="onKeydown($event)"
+       (input)="onInput($event)"
        idLinkValue
        #inputBox="ngModel"
        [readonly]="readonly"
        [required]="required"
-       [typeahead]="readonly ? [] : items"
+       [typeahead]="readonly ? [] : linkService.prefixes"
        [typeaheadMinLength]="suggestThreshold"
        [typeaheadOptionsLimit]="suggestLength"
+       (typeaheadOnSelect)="onSelect($event)"
        #ahead="bs-typeahead"
-       (keyup.enter)="ahead._container ? $event.stopPropagation() : return"/>
-{{inputBox.invalid}}
+       (keyup.enter)="ahead._container ? $event.stopPropagation() : ''"/>

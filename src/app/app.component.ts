@@ -1,16 +1,9 @@
 import {Component} from '@angular/core';
-import {IdLinkValue} from './id-link/id-link.value';
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  templateUrl: './app.component.html'
 })
 export class AppComponent {
-
-  value: IdLinkValue = new IdLinkValue({prefix: ''});
-
-  onModelChange(val) {
-    this.value = val;
-  }
+  value: string =  'chebi:1234';
 }

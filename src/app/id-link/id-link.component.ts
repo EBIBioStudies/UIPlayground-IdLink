@@ -1,10 +1,18 @@
-import {Component, ElementRef, EventEmitter, forwardRef, Input, OnChanges, Output, ViewChild} from '@angular/core';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {
+  AfterViewInit,
+  Component,
+  forwardRef,
+  Injector,
+  Input,
+  ViewChild
+} from '@angular/core';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl, NgModel, Validators} from '@angular/forms';
 import {Subject} from 'rxjs/Subject';
+
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';
-import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/observable/interval';
+
 import {IdLinkModel} from './id-link.model';
 import {IdLinkService} from './id-link.service';
 import {IdLinkValue} from './id-link.value';
@@ -12,7 +20,6 @@ import {IdLinkValue} from './id-link.value';
 @Component({
   selector: 'id-link',
   templateUrl: './id-link.component.html',
-  styleUrls: ['./id-link.component.css'],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -21,119 +28,123 @@ import {IdLinkValue} from './id-link.value';
     }
   ]
 })
-export class IdLinkComponent implements ControlValueAccessor {
+export class IdLinkComponent implements AfterViewInit, ControlValueAccessor {
+    private onChange: any = (_: any) => {};        //placeholder for handler propagating changes outside the custom control
+    private onTouched: any = () => {};             //placeholder for handler after the control has been "touched"
+    private linkModel: IdLinkModel = new IdLinkModel();
+    private inputChanged: Subject<string> = new Subject<string>();
 
-  @Input('placeholder') placeholder = 'prefix:identifier or URL';
-  @Input('disabled') disabled = false;
-  @Input() required?: boolean = false;
-  @Input() readonly?: boolean = false;
-  @Input() suggestLength: number = 30;        //max number of suggested values to be displayed at once
-  @Input() suggestThreshold: number = 0;      //number of typed characters before suggestions are displayed.
-  @ViewChild('inputBox', {read: ElementRef}) inputEl: ElementRef;
+    @Input() placeholder = 'prefix:identifier or URL';
+    @Input() disabled = false;
+    @Input() required?: boolean = false;
+    @Input() readonly?: boolean = false;
+    @Input() suggestLength: number = 30;           //max number of suggested values to be displayed at once
+    @Input() suggestThreshold: number = 0;         //number of typed characters before suggestions are displayed.
 
-  items: String[] = [];
-  selectedIndex = 0;
-  listOpen = false;
+    @ViewChild(NgModel)
+    private inputModel: NgModel;
 
-  private inputModel: IdLinkModel = new IdLinkModel();
-  private inputChanged: Subject<string> = new Subject<string>();
-
-  private onChange = [];
-  private onTouched = [];
-
-  constructor(private service: IdLinkService) {
-    this.inputChanged
-      .debounceTime(300)
-      .distinctUntilChanged()
-      .subscribe(value => {
-        this.listOpen = true;
-        this.update(value);
-      });
-  }
-
-  set value(value: IdLinkValue) {
-    if (this.inputModel.asValue().asString() !== value.asString()) {
-      this.update(value.asString());
+    /**
+     * Instantiates a new custom input component. Validates the input's contents on debounced keypresses.
+     * @param {Injector} injector - Parent's injector retrieved to get the component's form control later on.
+     * @param {IdLinkService} linkService - Singleton API service for Identifier.org.
+     */
+    constructor(private injector: Injector, public linkService: IdLinkService) {
+        this.inputChanged.debounceTime(300).distinctUntilChanged().subscribe(value => {
+            this.update(value);
+        });
     }
-  }
 
-  get value(): IdLinkValue {
-    return this.inputModel.asValue();
-  }
-
-  get inputText(): String {
-    return this.inputModel.asString();
-  }
-
-  writeValue(obj: any): void {
-    if (obj) {
-      this.value = obj;
+    set value(value: IdLinkValue) {
+        if (this.linkModel.asValue().asString() !== value.asString()) {
+            this.update(value.asString());
+        }
     }
-  }
 
-  registerOnChange(fn: any): void {
-    this.onChange.push(fn);
-  }
-
-  registerOnTouched(fn: any): void {
-    this.onTouched.push(fn);
-  }
-
-  setDisabledState(disabled: boolean): void {
-    this.disabled = disabled;
-  }
-
-  onInputChanged(inputText) {
-    this.inputChanged.next(inputText);
-  }
-
-  onKeydown(ev) {
-    switch (ev.key) {
-      case 'ArrowUp':
-        this.selectedIndex = this.selectedIndex > 0 ?
-          this.selectedIndex - 1 : 0;
-        break;
-      case 'ArrowDown':
-        const maxIndex = this.items.length === 0 ? 0 : this.items.length - 1;
-        this.selectedIndex = (this.selectedIndex < maxIndex) ?
-          this.selectedIndex + 1 : maxIndex;
-        this.listOpen = true;
-        break;
-      case 'Enter':
-        ev.preventDefault();
-        this.onSelectItem(this.items[this.selectedIndex]);
-        break;
+    get value(): IdLinkValue {
+        return this.linkModel.asValue();
     }
-  }
 
-  onSelectItem(item) {
-    this.listOpen = false;
-    this.update(item, true);
-    Observable.interval(100).subscribe(() => {
-      this.inputEl.nativeElement.focus();
-    });
-  }
-
-  onMouseOverItem(itemIndex) {
-    this.selectedIndex = itemIndex;
-  }
-
-  private update(value: string, prefixOnly = false) {
-    const prefixBefore = this.inputModel.prefix;
-    this.inputModel.update(value, prefixOnly);
-
-    const updates = this.inputModel.asValue();
-    this.onChange.forEach(f => f(updates));
-
-    if (prefixBefore !== this.inputModel.prefix) {
-      this.updateItems(this.inputModel.prefix || '');
+    get inputText(): string {
+        return this.linkModel.asString();
     }
-  }
 
-  private updateItems(prefix) {
-    this.service.suggest(prefix).subscribe(data => {
-      this.items = data;
-      this.selectedIndex = 0;
-    });
-  }
+    /**
+     * Writes a new value from the form model into the view or (if needed) DOM property. It supports both
+     * plain input from the server (a string) or directly an object model for the link.
+     * @see {@link ControlValueAccessor}
+     * @param {string | IdLinkValue} newValue - Value to be stored.
+     */
+    writeValue(newValue: string | IdLinkValue): void {
+        if (typeof newValue === 'string') {
+            this.update(newValue);
+        } else if (newValue && newValue instanceof IdLinkValue) {
+            this.value = newValue;
+        }
+    }
+
+    /**
+     * Registers a handler that should be called when something in the view has changed.
+     * @see {@link ControlValueAccessor}
+     * @param fn - Handler telling other form directives and form controls to update their values.
+     */
+    registerOnChange(fn) {
+        this.onChange = fn;
+    }
+
+
+    /**
+     * Registers a handler specifically for when a control receives a touch event.
+     * @see {@link ControlValueAccessor}
+     * @param fn - Handler for touch events.
+     */
+    registerOnTouched(fn: any) {
+        this.onTouched = fn;
+    }
+
+    setDisabledState(disabled: boolean): void {
+        this.disabled = disabled;
+    }
+
+    /**
+     * Lifecycle hook for operations after all child views have been initialised. It merges all validators of
+     * the actual input and the wrapping component.
+     */
+    ngAfterViewInit() {
+        const control = this.injector.get(NgControl).control;
+
+        control.setValidators(Validators.compose([control.validator, this.inputModel.control.validator]));
+        control.setAsyncValidators(Validators.composeAsync([control.asyncValidator, this.inputModel.control.asyncValidator]));
+    }
+
+    /**
+     * Handler for the input event. Notifies the input's contents change.
+     * @param {Event} event - DOM event object.
+     */
+    onInput(event: Event) {
+        this.inputChanged.next((<HTMLInputElement>event.target).value);
+    }
+
+    /**
+     * Handler for typeahead selection events. Replaces the present prefix with the one selected.
+     * @param {string} selection - Selected prefix.
+     */
+    onSelect(selection: string) {
+        if (this.linkModel.id) {
+            this.update(selection + ':' + this.linkModel.id);
+        } else {
+            this.update(selection + ':');
+        }
+    }
+
+    /**
+     * Updates the link model, notifying the outside world.
+     * @param {string} value - New value for the link model.
+     * @param {boolean} [prefixOnly = false] - Not clear purpose.
+     * TODO: what is the exact purpose of prefixOnly (beyond idlink.model's corresponding code) and is it still necessary?
+     */
+    private update(value: string, prefixOnly = false) {
+        this.linkModel.update(value, prefixOnly);
+        this.onChange(value);
+    }
 }

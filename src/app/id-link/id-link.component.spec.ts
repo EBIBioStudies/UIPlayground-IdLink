@@ -40,11 +40,4 @@ describe('IdLinkComponent', () => {
     expect(component.value).toBeDefined();
     expect(component.value.asString()).toBe(':');
   });
-
-  it('updates items list when new prefix value set', () => {
-    expect(component.items.length).toEqual(0);
-
-    component.value = new IdLinkValue({prefix: 'cheb'});
-    expect(component.items.length).toEqual(1);
-  });
 });
