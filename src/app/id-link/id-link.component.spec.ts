@@ -1,12 +1,13 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {IdLinkComponent} from './id-link.component';
-import {IdLinkValue} from './id-link.value';
 import {FormsModule} from '@angular/forms';
-import {InScrollViewDirective} from './in-scroll-view.directive';
 import {IdLinkService} from './id-link.service';
+
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/observable/of';
+
+import {TypeaheadModule} from "ngx-bootstrap";
 
 class IdLinkServiceMock {
   suggest(prefix: string): Observable<string[]> {
@@ -20,13 +21,17 @@ describe('IdLinkComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [FormsModule],
-      providers: [{provide: IdLinkService, useValue: new IdLinkServiceMock()}],
       declarations: [
         IdLinkComponent,
-        InScrollViewDirective]
-    })
-      .compileComponents();
+      ],
+      imports: [
+        FormsModule,
+        TypeaheadModule.forRoot()
+      ],
+      providers: [
+        {provide: IdLinkService, useValue: new IdLinkServiceMock()}
+      ]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

@@ -21,12 +21,12 @@ export class IdLinkService {
      * @param {HttpClient} http - Client HTTP API.
      */
     constructor(private http: HttpClient) {
-          this.list().subscribe(data => {
-              this.prefixes = data;
-              this._whenFetched.next(data);
-              this.isFetched = true;
-              this._whenFetched.complete();
-          });
+        this.list().subscribe(data => {
+            this.prefixes = data;
+            this._whenFetched.next(data);
+            this.isFetched = true;
+            this._whenFetched.complete();
+        });
     }
 
     /**

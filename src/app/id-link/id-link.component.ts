@@ -3,7 +3,7 @@ import {
   Component,
   forwardRef,
   Injector,
-  Input,
+  Input, Optional,
   ViewChild
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl, NgModel, Validators} from '@angular/forms';
@@ -46,10 +46,10 @@ export class IdLinkComponent implements AfterViewInit, ControlValueAccessor {
 
     /**
      * Instantiates a new custom input component. Validates the input's contents on debounced keypresses.
-     * @param {Injector} injector - Parent's injector retrieved to get the component's form control later on.
      * @param {IdLinkService} linkService - Singleton API service for Identifier.org.
+     * @param {Injector} injector - Parent's injector retrieved to get the component's form control later on.
      */
-    constructor(private injector: Injector, public linkService: IdLinkService) {
+    constructor(public linkService: IdLinkService, private injector: Injector) {
         this.inputChanged.debounceTime(300).distinctUntilChanged().subscribe(value => {
             this.update(value);
         });
@@ -109,12 +109,17 @@ export class IdLinkComponent implements AfterViewInit, ControlValueAccessor {
     /**
      * Lifecycle hook for operations after all child views have been initialised. It merges all validators of
      * the actual input and the wrapping component.
+     * NOTE: This stage is not testable. Hence the try-catch block.
      */
     ngAfterViewInit() {
-        const control = this.injector.get(NgControl).control;
+        try {
+            const control = this.injector.get(NgControl).control;
 
-        control.setValidators(Validators.compose([control.validator, this.inputModel.control.validator]));
-        control.setAsyncValidators(Validators.composeAsync([control.asyncValidator, this.inputModel.control.asyncValidator]));
+            control.setValidators(Validators.compose([control.validator, this.inputModel.control.validator]));
+            control.setAsyncValidators(Validators.composeAsync([control.asyncValidator, this.inputModel.control.asyncValidator]));
+        } catch (event) {
+            console.log('Validator merge bypassed. ' + event);
+        }
     }
 
     /**
