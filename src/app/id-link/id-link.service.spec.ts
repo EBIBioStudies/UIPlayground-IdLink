@@ -54,7 +54,9 @@ describe('IdLinkService', () => {
     httpClientSpy.get.and.returnValue(asyncError(errorResponse));
 
     service.validate('prefix', '12345').subscribe(
-      obj => expect(obj).toEqual(error)
+      (obj: Object) => {
+        return expect(obj).toEqual(error);
+      }
     );
   });
 

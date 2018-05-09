@@ -11,12 +11,12 @@ let prevResult: ValidationErrors = null;                  //last validation resu
 
 export function idLinkValidator(service: IdLinkService): AsyncValidatorFn {
     return (control: AbstractControl): Promise<ValidationErrors | null> | Observable<ValidationErrors | null> => {
-        const value = (control.value || '').trim();           //value of the control
-        let currLinkMatches;                                  //matched parts of the link
-        let currLink;                                         //current prefix and ID parst of the link
+        const value = (control.value || '').trim();       //value of the control
+        let currLinkMatches;                              //matched parts of the link
+        let currLink;                                     //current prefix and ID parst of the link
 
-        //If the control's value is a well-formed URL, signal no error to the outside world.
-        if (URL_REGEXP.test(value)) {
+        //If the control's value is empty or a well-formed URL, signal no error to the outside world.
+        if (!value.length || URL_REGEXP.test(value)) {
             return Observable.of(null);
         }
 
