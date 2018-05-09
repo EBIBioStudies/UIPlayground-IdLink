@@ -8,6 +8,7 @@
        [readonly]="readonly"
        [required]="required"
        [typeahead]="readonly ? [] : linkService.prefixes"
+       container="body"
        [typeaheadMinLength]="suggestThreshold"
        [typeaheadOptionsLimit]="suggestLength"
        (typeaheadOnSelect)="onSelect($event)"

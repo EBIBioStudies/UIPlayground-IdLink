@@ -6,21 +6,41 @@ import {IdLinkService} from './id-link.service';
 const VALUE_REGEXP = /^([\w-.]+):([\w-.]+)$/;
 const URL_REGEXP = /^(http|https|ftp):\/\/.+$/;
 
+let prevLink: string[] = ['', ''];                        //previous prefix and ID parts of the link
+let prevResult: ValidationErrors = null;                  //last validation result
+
 export function idLinkValidator(service: IdLinkService): AsyncValidatorFn {
     return (control: AbstractControl): Promise<ValidationErrors | null> | Observable<ValidationErrors | null> => {
+        const value = (control.value || '').trim();           //value of the control
+        let currLinkMatches;                                  //matched parts of the link
+        let currLink;                                         //current prefix and ID parst of the link
 
-        const value = (control.value || '').trim();
-
+        //If the control's value is a well-formed URL, signal no error to the outside world.
         if (URL_REGEXP.test(value)) {
             return Observable.of(null);
         }
 
-        const m = value.match(VALUE_REGEXP);
-        if (m && m.length === 3) {
-            return service.validate(m[1], m[2]).map(res => {
-                return res['message'] ? {idLinkValue: true} : null;
-            });
+        //If the control's value is a well-formed prefix:identifier, validate it against Identifier.org
+        currLinkMatches = value.match(VALUE_REGEXP);
+        if (currLinkMatches && currLinkMatches.length === 3) {
+
+            //Validation requests are made only once for the same invalid link. Otherwise, the last result is provided.
+            currLink = currLinkMatches.slice(1);
+            if (currLink.join() != prevLink.join()) {
+                prevLink = currLink;
+                return service.validate(currLink[0], currLink[1]).map(res => {
+                    if (res['message']) {
+                        prevResult = {pattern: true};
+                    } else {
+                        prevResult = null;
+                    }
+                    return prevResult;
+                });
+            }
+            return Observable.of(prevResult);
         }
-        return Observable.of({idLinkValue: true});
+
+        //The control's value is neither a valid URL nor a valid prefix:identifier link
+        return Observable.of({pattern: true});
     };
 }

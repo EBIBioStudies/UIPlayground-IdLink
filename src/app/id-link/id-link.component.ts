@@ -77,7 +77,7 @@ export class IdLinkComponent implements AfterViewInit, ControlValueAccessor {
      */
     writeValue(newValue: string | IdLinkValue): void {
         if (typeof newValue === 'string') {
-            this.update(newValue);
+            this.linkModel.update(newValue);
         } else if (newValue && newValue instanceof IdLinkValue) {
             this.value = newValue;
         }
@@ -109,7 +109,7 @@ export class IdLinkComponent implements AfterViewInit, ControlValueAccessor {
     /**
      * Lifecycle hook for operations after all child views have been initialised. It merges all validators of
      * the actual input and the wrapping component.
-     * NOTE: This stage is not testable. Hence the try-catch block.
+     * NOTE: This stage is non-testable due to the dynamic injection of NgControl. Hence the try-catch block.
      */
     ngAfterViewInit() {
         try {

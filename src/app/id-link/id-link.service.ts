@@ -77,7 +77,7 @@ export class IdLinkService {
 
     /**
      * Checks if a prefix:id string is among the allowed ones.
-     * @param {string} prefix - Section of the string containg just the prefix.
+     * @param {string} prefix - Section of the string containing just the prefix.
      * @param {string} id - Section of the string containing just the identifier.
      * @returns {Observable<boolean>} Observable the request has been turned into.
      */

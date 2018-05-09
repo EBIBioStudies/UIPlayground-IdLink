@@ -5,5 +5,5 @@ import {Component} from '@angular/core';
   templateUrl: './app.component.html'
 })
 export class AppComponent {
-  value: string =  'chebi:1234';
+  value: string =  'chebi:123';
 }
