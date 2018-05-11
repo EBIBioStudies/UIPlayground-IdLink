@@ -1,15 +1,15 @@
 <main class="col-xs-12 col-sm-8 col-sm-offset-2">
   <h1>Universal link field</h1>
-  <form [ngClass]="{'has-error': link.invalid}">
-    <id-link name="link"
-             #link="ngModel"
-             [(ngModel)]="value"
-             [suggestLength]="15"></id-link>
-  </form>
   <dl>
     <dt>Model:</dt>
     <dd><pre>{{modelValue | json}}</pre></dd>
     <dt>URL:</dt>
     <dd><pre>{{link.valid && value.length ? linkField.link() : 'None available'}}</pre></dd>
   </dl>
+  <form [ngClass]="{'has-error': link.invalid}">
+    <id-link name="link"
+             #link="ngModel"
+             [(ngModel)]="value"
+             [suggestLength]="15"></id-link>
+  </form>
 </main>
