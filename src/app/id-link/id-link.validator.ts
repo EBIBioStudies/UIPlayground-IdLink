@@ -22,7 +22,13 @@ export function idLinkValidator(service: IdLinkService): AsyncValidatorFn {
 
         //If the control's value is a well-formed prefix:identifier, validate it against Identifier.org
         currLinkMatches = value.match(VALUE_REGEXP);
+
         if (currLinkMatches && currLinkMatches.length === 3) {
+
+            //To save on requests, make sure the prefix is a known one. Otherwise, it's clear the link is invalid.
+            if (service.prefixes.length && service.prefixes.indexOf(currLinkMatches[1]) == -1) {
+                return Observable.of({pattern: true});
+            }
 
             //Validation requests are made only once for the same invalid link. Otherwise, the last result is provided.
             currLink = currLinkMatches.slice(1);

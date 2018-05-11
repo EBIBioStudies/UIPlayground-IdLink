@@ -3,10 +3,12 @@ import {
   Component,
   forwardRef,
   Injector,
-  Input, Optional,
+  Input,
   ViewChild
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl, NgModel, Validators} from '@angular/forms';
+import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
+
 import {Subject} from 'rxjs/Subject';
 
 import 'rxjs/add/operator/debounceTime';
@@ -20,6 +22,7 @@ import {IdLinkValue} from './id-link.value';
 @Component({
   selector: 'id-link',
   templateUrl: './id-link.component.html',
+  styleUrls: ['./id-link.component.css'],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -34,7 +37,7 @@ export class IdLinkComponent implements AfterViewInit, ControlValueAccessor {
     private linkModel: IdLinkModel = new IdLinkModel();
     private inputChanged: Subject<string> = new Subject<string>();
 
-    @Input() placeholder = 'prefix:identifier or URL';
+    @Input() placeholder = 'URL or prefix:ID';
     @Input() disabled = false;
     @Input() required?: boolean = false;
     @Input() readonly?: boolean = false;
@@ -48,8 +51,9 @@ export class IdLinkComponent implements AfterViewInit, ControlValueAccessor {
      * Instantiates a new custom input component. Validates the input's contents on debounced keypresses.
      * @param {IdLinkService} linkService - Singleton API service for Identifier.org.
      * @param {Injector} injector - Parent's injector retrieved to get the component's form control later on.
+     * @param {DomSanitizer} sanitizer - Marks URLs as safe for use in the different DOM contexts.
      */
-    constructor(public linkService: IdLinkService, private injector: Injector) {
+    constructor(public linkService: IdLinkService, private injector: Injector, private sanitizer: DomSanitizer) {
         this.inputChanged.debounceTime(300).distinctUntilChanged().subscribe(value => {
             this.update(value);
         });
@@ -67,6 +71,38 @@ export class IdLinkComponent implements AfterViewInit, ControlValueAccessor {
 
     get inputText(): string {
         return this.linkModel.asString();
+    }
+
+    /**
+     * Determines if a link is not a conventional URL.
+     * @returns {boolean} True if pointing to Identifier's website.
+     */
+    get isIdLink(): boolean {
+        return this.link() && (<string>this.link()).indexOf('identifiers.org') > -1;
+    }
+
+    /**
+     * Web link for the current URL or prefix:id pointer if valid, sanitised if so wished.
+     * NOTE: A blank field could be valid if not required. Hence the check for an existing URL.
+     * @param {boolean} [isSanitise = false] - Enables protection against XSS if necessary.
+     * @returns {SafeUrl | string} Sanitised URL for the link corresponding to the field's current contents.
+     */
+    link(isSanitise: boolean = false): SafeUrl | string {
+        let url = '';
+
+        if (this.inputModel.valid) {
+            if (this.linkModel.url) {
+                url =  this.linkModel.url;
+            } if (this.linkModel.id) {
+                url = this.linkService.url;
+            }
+        }
+
+        if (isSanitise) {
+            return this.sanitizer.bypassSecurityTrustResourceUrl(url);
+        } else {
+            return url;
+        }
     }
 
     /**
