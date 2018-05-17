@@ -5,7 +5,6 @@
            [ngModel]="inputText"
            (input)="onInput($event)"
            idLinkValue
-           #inputBox="ngModel"
            [readonly]="readonly"
            [required]="required"
            [typeahead]="readonly ? [] : linkService.prefixes"

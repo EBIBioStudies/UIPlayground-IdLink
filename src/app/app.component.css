@@ -1,0 +1,17 @@
+body, html {
+  width: 100%;
+  height: 100%;
+}
+main {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding-bottom: 15px;
+  overflow: hidden;
+}
+dl {
+  min-height: 182px;
+}
+iframe {
+  flex-grow: 1;
+}
