@@ -1,16 +1,18 @@
-import {Component} from '@angular/core';
-import {IdLinkValue} from './id-link/id-link.value';
+import {Component, ViewChild, ViewEncapsulation} from '@angular/core';
+import {IdLinkComponent} from "./id-link/id-link.component";
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class AppComponent {
+  value: string =  'taxonomy:1234';
 
-  value: IdLinkValue = new IdLinkValue({prefix: 'cheb'});
+  @ViewChild(IdLinkComponent) linkField;
 
-  onModelChange(val) {
-    this.value = val;
+  get modelValue() {
+    return this.linkField.value.value;
   }
 }

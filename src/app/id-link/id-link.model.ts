@@ -1,8 +1,8 @@
 import {IdLinkValue} from './id-link.value';
 
 export class IdLinkModel {
-  private urlRegexp = /^(http|https|ftp)+[^\s]+$/;
-  private idRegexp = /^([^:]+)(:.*)?$/;
+  private urlRegexp = /^(http|https|ftp)+[^\s]+$/;  //used to check if the link is a URL
+  private idRegexp = /^([^:]*)(:.*)?$/;             //used to split link into valid tokens, not for validation
 
   private _prefix: string;
   private _id: string;

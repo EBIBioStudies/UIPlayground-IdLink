@@ -1,12 +1,13 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {IdLinkComponent} from './id-link.component';
-import {IdLinkValue} from './id-link.value';
 import {FormsModule} from '@angular/forms';
-import {InScrollViewDirective} from './in-scroll-view.directive';
 import {IdLinkService} from './id-link.service';
+
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/observable/of';
+
+import {TypeaheadModule} from "ngx-bootstrap";
 
 class IdLinkServiceMock {
   suggest(prefix: string): Observable<string[]> {
@@ -20,13 +21,17 @@ describe('IdLinkComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [FormsModule],
-      providers: [{provide: IdLinkService, useValue: new IdLinkServiceMock()}],
       declarations: [
         IdLinkComponent,
-        InScrollViewDirective]
-    })
-      .compileComponents();
+      ],
+      imports: [
+        FormsModule,
+        TypeaheadModule.forRoot()
+      ],
+      providers: [
+        {provide: IdLinkService, useValue: new IdLinkServiceMock()}
+      ]
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -35,16 +40,9 @@ describe('IdLinkComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should be instantiated', () => {
     expect(component).toBeTruthy();
     expect(component.value).toBeDefined();
     expect(component.value.asString()).toBe(':');
-  });
-
-  it('updates items list when new prefix value set', () => {
-    expect(component.items.length).toEqual(0);
-
-    component.value = new IdLinkValue({prefix: 'cheb'});
-    expect(component.items.length).toEqual(1);
   });
 });

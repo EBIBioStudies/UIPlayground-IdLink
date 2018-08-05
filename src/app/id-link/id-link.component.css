@@ -1,47 +1,18 @@
-.id-link {
-  background-color: transparent;
+.has-feedback .form-control {
+  padding-right: 30px;
 }
-
-.id-link > input {
-  padding: 2px;
-  box-sizing: border-box;
-  background-clip: content-box;
-  width: 100%;
-  font-size: 24px;
+.form-control-feedback {
+  pointer-events: auto
 }
-
-.id-link > .invalid {
-  border: 2px solid red;
-  outline: none;
+.form-control-feedback img {
+  position: absolute;
+  top: 6.5px;
+  right: 4px;
+  width: 18px;
 }
-
-.id-link > ul {
-  background-color: #fff;
-  margin: 0;
-  width: 100%;
-  list-style-type: none;
-  padding: 0;
-  border: 1px solid #ccc;
-  box-sizing: border-box;
-  animation: slideDown 0.1s;
-  max-height: 200px;
-  overflow: hidden;
-  overflow-y: auto;
+.input-sm + .form-control-feedback img {
+  top: 5px;
 }
-
-.id-link > ul.closed {
-  display: none;
-}
-
-.id-link > ul li {
-  padding: 2px 5px;
-  border-bottom: 1px solid #eee;
-}
-
-.id-link > ul li.selected {
-  background-color: #ccc;
-}
-
-.id-link > ul li:last-child {
-  border-bottom: none;
+.glyphicon {
+  top: 3px;
 }

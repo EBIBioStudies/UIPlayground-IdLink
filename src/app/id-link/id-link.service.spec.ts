@@ -19,7 +19,14 @@ describe('IdLinkService', () => {
 
   beforeEach(() => {
     httpClientSpy = jasmine.createSpyObj('HttpClient', ['get']);
+    httpClientSpy.get.and.returnValue(asyncData(['prefix1', 'prefix2', 'prefix3']));
     service = new IdLinkService(<any> httpClientSpy);
+  });
+
+  it('fetches the list of prefixes after instantiation', () => {
+    service.whenListed.subscribe(() => {
+      expect(service.prefixes.length).toBe(3);
+    });
   });
 
   it('#suggest should return an empty list when the server returns a 404', () => {
@@ -47,7 +54,9 @@ describe('IdLinkService', () => {
     httpClientSpy.get.and.returnValue(asyncError(errorResponse));
 
     service.validate('prefix', '12345').subscribe(
-      obj => expect(obj).toEqual(error)
+      (obj: Object) => {
+        return expect(obj).toEqual(error);
+      }
     );
   });
 
@@ -60,7 +69,7 @@ describe('IdLinkService', () => {
     service.suggest('prefix').subscribe(
       items => expect(items).toEqual(expectedPrefixes)
     );
-    expect(httpClientSpy.get.calls.count()).toBe(1);
+    expect(httpClientSpy.get.calls.count()).toBe(2);  //one for complete list and the other the suggested prefixes
   });
 
 });

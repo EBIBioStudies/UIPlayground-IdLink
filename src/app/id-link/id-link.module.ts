@@ -6,18 +6,21 @@ import {HttpClientModule} from '@angular/common/http';
 import {IdLinkComponent} from './id-link.component';
 import {IdLinkValueValidatorDirective} from './id-link.validator.directive';
 import {IdLinkService} from './id-link.service';
-import {InScrollViewDirective} from './in-scroll-view.directive';
+
+import {
+  TypeaheadModule
+} from 'ngx-bootstrap';
 
 @NgModule({
   declarations: [
     IdLinkComponent,
-    IdLinkValueValidatorDirective,
-    InScrollViewDirective
+    IdLinkValueValidatorDirective
   ],
   imports: [
     CommonModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    TypeaheadModule.forRoot(),
   ],
   providers: [
     IdLinkService
