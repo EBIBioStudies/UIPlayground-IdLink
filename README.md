@@ -8,5 +8,5 @@ Universal link field
  [Ngx-Bootstrap](https://valor-software.com/ngx-bootstrap/) for the typeahead suggestion engine.
 
 <p align="center">
-	<img src="assets/demo.gif" alt="Universal link field">
+	<img src="src/assets/demo.gif" alt="Universal link field">
 </p>
