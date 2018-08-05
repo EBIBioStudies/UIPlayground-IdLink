@@ -100,7 +100,7 @@ export class IdLinkComponent implements AfterViewInit, ControlValueAccessor {
    * @param {boolean} [isSanitise = false] - Enables protection against XSS if necessary.
    * @returns {SafeUrl | string} Sanitised URL for the link corresponding to the field's current contents.
    */
-  link(isSanitise: boolean = false): SafeUrl | string {
+  link(isSanitise: boolean = false, isProtocol:boolean = true): SafeUrl | string {
       let url;
 
       try {
@@ -110,11 +110,15 @@ export class IdLinkComponent implements AfterViewInit, ControlValueAccessor {
           url = '';
       }
 
-      if (isSanitise) {
-          return this.sanitizer.bypassSecurityTrustResourceUrl(url);
-      } else {
-          return url;
+      if (!isProtocol) {
+          url = url.replace(/(^\w+:|^)/, '');
       }
+
+      if (isSanitise) {
+          url = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+      }
+
+      return url;
   }
 
   /**
