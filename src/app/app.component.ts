@@ -8,7 +8,7 @@ import {IdLinkComponent} from "./id-link/id-link.component";
   encapsulation: ViewEncapsulation.None
 })
 export class AppComponent {
-  value: string =  'icd:1234';
+  value: string =  'taxonomy:1234';
 
   @ViewChild(IdLinkComponent) linkField;
 
